@@ -65,7 +65,9 @@ public class PAs implements BranchPredictor {
         SC.load(CombinationalLogic.count(SC.read(), actual == BranchResult.TAKEN, CountMode.SATURATING));
         PSPHT.put(address, SC.read());
 
-        PABHR.read(instruction.getInstructionAddress()).insert(actual == BranchResult.TAKEN? Bit.ONE : Bit.ZERO);
+        ShiftRegister SR = PABHR.read(instruction.getInstructionAddress());
+        SR.insert(actual == BranchResult.TAKEN? Bit.ONE : Bit.ZERO);
+        PABHR.write(instruction.getInstructionAddress(), SR.read());
     }
 
     @Override
