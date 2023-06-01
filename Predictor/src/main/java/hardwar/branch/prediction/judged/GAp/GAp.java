@@ -25,17 +25,17 @@ public class GAp implements BranchPredictor {
      */
     public GAp(int BHRSize, int SCSize, int branchInstructionSize) {
         // TODO: complete the constructor
-        this.branchInstructionSize = 0;
+        this.branchInstructionSize = branchInstructionSize;
 
         // Initialize the BHR register with the given size and no default value
-        this.BHR = null;
+        this.BHR = new SIPORegister("BHR", BHRSize, null);
 
         // Initializing the PAPHT with BranchInstructionSize as PHT Selector and 2^BHRSize row as each PHT entries
         // number and SCSize as block size
-        PAPHT = null;
+        PAPHT = new PerAddressPredictionHistoryTable(branchInstructionSize, 1<<BHRSize, 1<<SCSize);
 
         // Initialize the SC register
-        SC = null;
+        SC = new SIPORegister("SC", SCSize, null);
     }
 
     /**
@@ -47,7 +47,12 @@ public class GAp implements BranchPredictor {
     @Override
     public BranchResult predict(BranchInstruction branchInstruction) {
         // TODO: complete Task 1
-        return BranchResult.NOT_TAKEN;
+
+        Bit[] superAddress = getCacheEntry(branchInstruction.getInstructionAddress());
+        PAPHT.putIfAbsent(superAddress, getDefaultBlock());
+        SC.load(PAPHT.get(superAddress));
+
+        return (SC.read()[0] == Bit.ONE) ? BranchResult.TAKEN : BranchResult.NOT_TAKEN;
     }
 
     /**
@@ -59,6 +64,15 @@ public class GAp implements BranchPredictor {
     @Override
     public void update(BranchInstruction branchInstruction, BranchResult actual) {
         // TODO : complete Task 2
+
+        Bit[] superAddress = getCacheEntry(branchInstruction.getInstructionAddress());
+        PAPHT.putIfAbsent(superAddress, getDefaultBlock());
+        SC.load(PAPHT.get(superAddress));
+
+        SC.load(CombinationalLogic.count(SC.read(), actual == BranchResult.TAKEN, CountMode.SATURATING));
+        PAPHT.put(superAddress, SC.read());
+
+        BHR.insert((actual == BranchResult.TAKEN) ? Bit.ONE : Bit.ZERO);
     }
 
 
