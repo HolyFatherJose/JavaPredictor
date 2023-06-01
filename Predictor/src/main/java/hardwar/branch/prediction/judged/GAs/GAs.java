@@ -56,7 +56,7 @@ public class GAs implements BranchPredictor {
     public BranchResult predict(BranchInstruction branchInstruction) {
         // TODO: complete Task 1
 
-        Bit[] address = getCacheEntry(branchInstruction.getJumpAddress());
+        Bit[] address = getCacheEntry(branchInstruction.getInstructionAddress());
         PSPHT.putIfAbsent(address, getDefaultBlock());
         SC.load(PSPHT.get(address));
 
@@ -73,7 +73,7 @@ public class GAs implements BranchPredictor {
     public void update(BranchInstruction branchInstruction, BranchResult actual) {
         // TODO: complete Task 2
 
-        Bit[] address = getCacheEntry(branchInstruction.getJumpAddress());
+        Bit[] address = getCacheEntry(branchInstruction.getInstructionAddress());
         PSPHT.putIfAbsent(address, getDefaultBlock());
         SC.load(PSPHT.get(address));
 
