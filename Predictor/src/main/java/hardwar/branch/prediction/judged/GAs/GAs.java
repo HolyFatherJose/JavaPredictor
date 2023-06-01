@@ -55,11 +55,9 @@ public class GAs implements BranchPredictor {
     @Override
     public BranchResult predict(BranchInstruction branchInstruction) {
         // TODO: complete Task 1
-        Bit[] stronglyNotTaken = new Bit[SC.getLength()];
-        for (int i = 0; i < SC.getLength(); i++) stronglyNotTaken[i] = Bit.ZERO;
 
-        Bit[] address = getCacheEntry(branchInstruction.getInstructionAddress());
-        PSPHT.putIfAbsent(address, stronglyNotTaken);
+        Bit[] address = getCacheEntry(branchInstruction.getJumpAddress());
+        PSPHT.putIfAbsent(address, getDefaultBlock());
         SC.load(PSPHT.get(address));
 
         return (SC.read()[0] == Bit.ONE) ? BranchResult.TAKEN : BranchResult.NOT_TAKEN;
@@ -74,11 +72,9 @@ public class GAs implements BranchPredictor {
     @Override
     public void update(BranchInstruction branchInstruction, BranchResult actual) {
         // TODO: complete Task 2
-        Bit[] stronglyNotTaken = new Bit[SC.getLength()];
-        for (int i = 0; i < SC.getLength(); i++) stronglyNotTaken[i] = Bit.ZERO;
 
-        Bit[] address = getCacheEntry(branchInstruction.getInstructionAddress());
-        PSPHT.putIfAbsent(address, stronglyNotTaken);
+        Bit[] address = getCacheEntry(branchInstruction.getJumpAddress());
+        PSPHT.putIfAbsent(address, getDefaultBlock());
         SC.load(PSPHT.get(address));
 
         SC.load(CombinationalLogic.count(SC.read(), actual == BranchResult.TAKEN, CountMode.SATURATING));
