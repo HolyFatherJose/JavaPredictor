@@ -45,7 +45,6 @@ public class GAg implements BranchPredictor {
 
         Bit[] address = BHR.read();
         PHT.putIfAbsent(address, stronglyNotTaken);
-
         Bit[] counter =  PHT.get(address);
 
         return (counter[0] == Bit.ONE) ? BranchResult.TAKEN : BranchResult.NOT_TAKEN;
@@ -60,8 +59,10 @@ public class GAg implements BranchPredictor {
     @Override
     public void update(BranchInstruction instruction, BranchResult actual) {
         // TODO : complete Task 2
+        Bit[] stronglyNotTaken = {Bit.ZERO, Bit.ZERO};
 
         Bit[] address = BHR.read();
+        PHT.putIfAbsent(address, stronglyNotTaken);
         Bit[] counter =  PHT.get(address);
 
         Bit[] newCounter = CombinationalLogic.count(counter, actual == BranchResult.TAKEN, CountMode.SATURATING);
