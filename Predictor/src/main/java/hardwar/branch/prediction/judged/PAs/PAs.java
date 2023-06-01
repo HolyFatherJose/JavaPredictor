@@ -47,7 +47,7 @@ public class PAs implements BranchPredictor {
     public BranchResult predict(BranchInstruction branchInstruction) {
         // TODO: complete Task 1
 
-        Bit[] address = PABHR.read(branchInstruction.getInstructionAddress()).read();
+        Bit[] address = getCacheEntry(branchInstruction.getInstructionAddress(), PABHR.read(branchInstruction.getInstructionAddress()).read());
         PSPHT.putIfAbsent(address, getDefaultBlock());
         SC.load(PSPHT.get(address));
 
@@ -58,7 +58,7 @@ public class PAs implements BranchPredictor {
     public void update(BranchInstruction instruction, BranchResult actual) {
         // TODO:complete Task 2
 
-        Bit[] address = PABHR.read(instruction.getInstructionAddress()).read();
+        Bit[] address = getCacheEntry(instruction.getInstructionAddress(), PABHR.read(instruction.getInstructionAddress()).read());
         PSPHT.putIfAbsent(address, getDefaultBlock());
         SC.load(PSPHT.get(address));
 
